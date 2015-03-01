@@ -23,16 +23,41 @@ public class MainActivity extends Activity {
         text2 = (TextView)findViewById(R.id.text2);
     }
 
-    public void all(View v){                                //なんでもいいから全部のとき
+    public void all(View v){                             //なんでもいいから全部のとき
         Intent intent = new Intent(getApplicationContext(),MapsActivity.class);
+        intent.putExtra("key","all");                 //第一引数に渡したいキー。これはStrのみ。第二引数に渡したい値。
         startActivity(intent);
     }
 
-    public void ramen(View v){
-        Intent intent2 = new Intent(getApplicationContext(),MapsActivity2.class);
-        startActivity(intent2);
+    /*public void ramen(View v){                           //ラーメンのとき
+        Intent intent = new Intent(getApplicationContext(),MapsActivity.class);
+        intent.putExtra("key","ramen");
+        startActivity(intent);
     }
 
+    public void wasyoku(View v){                         //和食のとき
+        Intent intent = new Intent(getApplicationContext(),MapsActivity.class);
+        intent.putExtra("key","wasyoku");
+        startActivity(intent);
+    }
+
+    public void italy(View v){                           //イタリアンのとき
+        Intent intent = new Intent(getApplicationContext(),MapsActivity.class);
+        intent.putExtra("key","italy");
+        startActivity(intent);
+    }
+
+    public void china(View v){                           //中華のとき
+        Intent intent = new Intent(getApplicationContext(),MapsActivity.class);
+        intent.putExtra("key","china");
+        startActivity(intent);
+    }
+
+    public void drink(View v){                           //寿司のとき
+        Intent intent = new Intent(getApplicationContext(),MapsActivity.class);
+        intent.putExtra("key","drink");
+        startActivity(intent);
+    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
