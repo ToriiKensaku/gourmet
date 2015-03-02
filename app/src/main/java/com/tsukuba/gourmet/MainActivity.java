@@ -29,34 +29,34 @@ public class MainActivity extends Activity {
         startActivity(intent);
     }
 
-    /*public void ramen(View v){                           //ラーメンのとき
-        Intent intent = new Intent(getApplicationContext(),MapsActivity.class);
-        intent.putExtra("key","ramen");
-        startActivity(intent);
+    public void ramen(View v){                           //ラーメンのとき
+        Intent intent2 = new Intent(getApplicationContext(),MapsActivity.class);
+        intent2.putExtra("key2","ramen");
+        startActivity(intent2);
     }
 
     public void wasyoku(View v){                         //和食のとき
-        Intent intent = new Intent(getApplicationContext(),MapsActivity.class);
-        intent.putExtra("key","wasyoku");
-        startActivity(intent);
+        Intent intent3 = new Intent(getApplicationContext(),MapsActivity.class);
+        intent3.putExtra("key3","wasyoku");
+        startActivity(intent3);
     }
 
     public void italy(View v){                           //イタリアンのとき
-        Intent intent = new Intent(getApplicationContext(),MapsActivity.class);
-        intent.putExtra("key","italy");
-        startActivity(intent);
+        Intent intent4 = new Intent(getApplicationContext(),MapsActivity.class);
+        intent4.putExtra("key4","italy");
+        startActivity(intent4);
     }
 
     public void china(View v){                           //中華のとき
-        Intent intent = new Intent(getApplicationContext(),MapsActivity.class);
-        intent.putExtra("key","china");
-        startActivity(intent);
+        Intent intent5 = new Intent(getApplicationContext(),MapsActivity.class);
+        intent5.putExtra("key5","china");
+        startActivity(intent5);
     }
 
-    public void drink(View v){                           //寿司のとき
-        Intent intent = new Intent(getApplicationContext(),MapsActivity.class);
-        intent.putExtra("key","drink");
-        startActivity(intent);
+    /*public void drink(View v){                           //寿司のとき
+        Intent intent6 = new Intent(getApplicationContext(),MapsActivity.class);
+        intent6.putExtra("key6","drink");
+        startActivity(intent6);
     }*/
 
     @Override
