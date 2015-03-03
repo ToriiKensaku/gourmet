@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Message;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -26,27 +27,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.Calendar;
 
-public class MapsActivity extends FragmentActivity {
+public class MapsActivity extends FragmentActivity{
 
     private GoogleMap mMap;         //mapの取得
-    //現在時刻の取得
-    Calendar cal = Calendar.getInstance();
-    int week = cal.get(Calendar.DAY_OF_WEEK);
-    int hour = cal.get(Calendar.HOUR_OF_DAY);
-    int minute = cal.get(Calendar.MINUTE);
-    int hourtime = hour * 100 + minute;                                  //何時何分
-
-    String category;
-    String category2;
-    String category3;
-    String category4;
-    String category5;
-
-    Intent intent;
-    Intent intent2;
-    Intent intent3;
-    Intent intent4;
-    Intent intent5;
 
     //場所の指定。緯度経度
     LatLng ramen1 = new LatLng(36.097468, 140.110217);             //ごう家
@@ -139,16 +122,16 @@ public class MapsActivity extends FragmentActivity {
 
     private void setUpMap() {
         // intentの値の受け取りをする。
-        intent = getIntent();
-        category = intent.getStringExtra("key");
-        intent2 = getIntent();
-        category2 = intent2.getStringExtra("key2");
-        intent3 = getIntent();
-        category3 = intent3.getStringExtra("key3");
-        intent4 = getIntent();
-        category4 = intent4.getStringExtra("key4");
-        intent5 = getIntent();
-        category5 = intent5.getStringExtra("key5");
+        Intent intent = getIntent();
+        int category = intent.getIntExtra("key",1);
+
+        //現在時刻の取得
+        Calendar cal = Calendar.getInstance();
+        int week = cal.get(Calendar.DAY_OF_WEEK);
+        int hour = cal.get(Calendar.HOUR_OF_DAY);
+        int minute = cal.get(Calendar.MINUTE);
+        int hourtime = hour * 100 + minute;                                  //何時何分
+
 
         mMap.getUiSettings().setZoomControlsEnabled(true);                //ズームボタンの追加をはじめに行う。
         mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);                       // マップをハイブリッド表示にする
@@ -158,11 +141,12 @@ public class MapsActivity extends FragmentActivity {
         UiSettings settings = mMap.getUiSettings();                       // Settingのインポート
         settings.setCompassEnabled(true);                                 // コンパスonにする
 
-        LocationManager locman = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        Location loc = locman.getLastKnownLocation("gps");                // LocationManagerを使う
+        /*LocationManager locman = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        Location loc = locman.getLastKnownLocation("gps");                // LocationManagerを使う*/
 
-        double currentLat = loc.getLatitude();                            // 現在地の緯度
-        double currentLong = loc.getLongitude();                          // 現在地の経度
+        double currentLat = 36.111386;                            // 現在地の緯度
+        double currentLong = 140.104012;                          // 現在地の経度
+        LatLng current = new LatLng(36.111386,140.104012);
 
         CircleOptions circleOptions = new CircleOptions()                 // 円のoption
                 .center(new LatLng(currentLat, currentLong))              // 中心。緯度経度
@@ -172,11 +156,16 @@ public class MapsActivity extends FragmentActivity {
         circle.setStrokeColor(Color.argb(0x99, 0x33, 0x99, 0xFF));        // 円の線の色。alpha,red,green,blue
         circle.setStrokeWidth(10.0f);                                     // 円の線の太さ
         circle.setFillColor(Color.argb(0x22, 0x33, 0x99, 0xFF));          // 円の塗りつぶしの色
+        BitmapDescriptor icon6 = BitmapDescriptorFactory.fromResource(R.drawable.s_tukutuku5);     //アイコンの変更.Bitmapに変える.sizeに注意
+        mMap.addMarker(new MarkerOptions().position(current).title("大笑軒響").snippet("11時〜24時").icon(icon6));      //snippetはコメント挿入
+
+
 
         BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.s_ramen2);     //アイコンの変更.Bitmapに変える.sizeに注意
-        BitmapDescriptor icon2 = BitmapDescriptorFactory.fromResource(R.drawable.s_wasyoku1);     //アイコンの変更.Bitmapに変える.sizeに注意
-        BitmapDescriptor icon3 = BitmapDescriptorFactory.fromResource(R.drawable.s_pasta1);     //アイコンの変更.Bitmapに変える.sizeに注意
+        BitmapDescriptor icon2 = BitmapDescriptorFactory.fromResource(R.drawable.s_wasyoku2);     //アイコンの変更.Bitmapに変える.sizeに注意
+        BitmapDescriptor icon3 = BitmapDescriptorFactory.fromResource(R.drawable.s_pasta2);     //アイコンの変更.Bitmapに変える.sizeに注意
         BitmapDescriptor icon4 = BitmapDescriptorFactory.fromResource(R.drawable.s_chinese1);     //アイコンの変更.Bitmapに変える.sizeに注意
+        BitmapDescriptor icon5 = BitmapDescriptorFactory.fromResource(R.drawable.s_sushi);     //アイコンの変更.Bitmapに変える.sizeに注意
 
         //つくば付近にいく。別で現在地もあるけどw
         CameraPosition tsukuba = new CameraPosition.Builder()
@@ -186,7 +175,7 @@ public class MapsActivity extends FragmentActivity {
 
         //以下、ゴリ押しで進めていく。お店の追加をしてマーカーで表示する。if文回す
 
-        if (category.equals("all") || category2.equals("ramen")) {
+        if (category == 1 || category == 2) {
             if (hour >= 17 && hour < 24) {
                 MarkerOptions gouya = new MarkerOptions();
                 gouya.position(ramen1);
@@ -195,57 +184,85 @@ public class MapsActivity extends FragmentActivity {
                 gouya.icon(icon);
                 mMap.addMarker(gouya);     //これが方法１。まとめると以下のようになる。for文で回しても同じ
             }
-            if (hour >= 11 && hour < 24) {
+            if (hour >= 11) {
                 mMap.addMarker(new MarkerOptions().position(ramen2).title("大笑軒響").snippet("11時〜24時").icon(icon));      //snippetはコメント挿入
                 mMap.addMarker(new MarkerOptions().position(ramen6).title("大勝軒").snippet("11:00～24:00").icon(icon));
             }
-            if (hourtime >= 1130 && hourtime <= 1500 && hourtime >= 1730 && hourtime <= 2200) {
+            if (hourtime >= 1130 && hourtime <= 1500) {
                 mMap.addMarker(new MarkerOptions().position(ramen3).title("おび屋").snippet("11：30～15：00(L.O) 17：30～22：00(L.O)").icon(icon));
             }
-            if (hour >= 11 && hour <= 24) {
+            if (hourtime >= 1730 && hourtime <= 2200) {
+                mMap.addMarker(new MarkerOptions().position(ramen3).title("おび屋").snippet("11：30～15：00(L.O) 17：30～22：00(L.O)").icon(icon));
+            }
+            if (hour >= 11) {
                 mMap.addMarker(new MarkerOptions().position(ramen4).title("丸源").snippet("11：00～25:00").icon(icon));
             }
             if (hour >= 11 && hour < 23) {
                 mMap.addMarker(new MarkerOptions().position(ramen5).title("がんこ屋").snippet("11:00～23:00").icon(icon));
                 mMap.addMarker(new MarkerOptions().position(ramen13).title("清六屋　本店").snippet("11：00～23：00").icon(icon));
             }
-            if (hour >= 11 && hour < 2) {
+            if (hour >= 11 || hour < 2) {
                 mMap.addMarker(new MarkerOptions().position(ramen7).title("五右衛門").snippet("11時〜02時").icon(icon));
             }
-            if (hour >= 11 && hour < 3) {
+            if (hour >= 11 || hour < 3) {
                 mMap.addMarker(new MarkerOptions().position(ramen8).title("角藤").snippet("11:00～3：00").icon(icon));
             }
-            if (hourtime >= 1130 && hourtime <= 1430 && hourtime >= 1730 && hourtime <= 2130) {
+            if (hourtime >= 1130 && hourtime <= 1430) {
                 mMap.addMarker(new MarkerOptions().position(ramen9).title("はりけん").snippet("11:30～14:30 17:30～21:30").icon(icon));
             }
-            if (hour >= 11 && hour < 4) {
+            if (hourtime >= 1730 && hourtime <= 2130) {
+                mMap.addMarker(new MarkerOptions().position(ramen9).title("はりけん").snippet("11:30～14:30 17:30～21:30").icon(icon));
+            }
+            if (hour >= 11 || hour < 4) {
                 mMap.addMarker(new MarkerOptions().position(ramen10).title("山水").snippet("11:00～4:00").icon(icon));
             }
-            if (hourtime >= 1130 && hour <= 1430 && hourtime >= 1730 && hourtime >= 2200) {
+            if (hourtime >= 1130 && hourtime <= 1430) {
                 mMap.addMarker(new MarkerOptions().position(ramen11).title("油虎").snippet("11:30～14:30 17:30～22:00").icon(icon));
                 mMap.addMarker(new MarkerOptions().position(ramen18).title("龍郎").snippet("11:30～14:30 17:30～22:00").icon(icon));
             }
-            if (hourtime >= 1130 && hourtime < 1400 && hourtime >= 1730 && hourtime <= 2100) {
+            if (hourtime >= 1730 && hourtime >= 2200) {
+                mMap.addMarker(new MarkerOptions().position(ramen11).title("油虎").snippet("11:30～14:30 17:30～22:00").icon(icon));
+                mMap.addMarker(new MarkerOptions().position(ramen18).title("龍郎").snippet("11:30～14:30 17:30～22:00").icon(icon));
+            }
+            if (hourtime >= 1130 && hourtime < 1400) {
                 mMap.addMarker(new MarkerOptions().position(ramen12).title("喜元門　本店").snippet("11:30～14:00　17:30～21:00").icon(icon));
             }
-            if (hourtime >= 1130 && hourtime <= 1430 && hourtime >= 1730 && hourtime <= 2100) {
+            if (hourtime >= 1730 && hourtime <= 2100) {
+                mMap.addMarker(new MarkerOptions().position(ramen12).title("喜元門　本店").snippet("11:30～14:00　17:30～21:00").icon(icon));
+            }
+            if (hourtime >= 1130 && hourtime <= 1430) {
+                mMap.addMarker(new MarkerOptions().position(ramen14).title("蒼").snippet("11:30～14:30 17:30～21:00").icon(icon));
+            }
+            if (hourtime >= 1730 && hourtime <= 2100) {
                 mMap.addMarker(new MarkerOptions().position(ramen14).title("蒼").snippet("11:30～14:30 17:30～21:00").icon(icon));
             }
             if (hourtime >= 1130 && hourtime <= 1400) {
                 mMap.addMarker(new MarkerOptions().position(ramen15).title("いちかわ").snippet("11:30～14:00").icon(icon));
             }
-            if (hourtime >= 1130 && hourtime <= 1430 && hourtime >= 1800 && hourtime <= 2300) {
+            if (hourtime >= 1130 && hourtime <= 1430) {
                 mMap.addMarker(new MarkerOptions().position(ramen16).title("とりどり").snippet("11:30～14:30 18:00～23:00").icon(icon));
             }
-            if (hourtime >= 1130 && hourtime <= 1430 && hourtime >= 1700 && hourtime <= 2100) {
+            if (hourtime >= 1800 && hourtime <= 2300) {
+                mMap.addMarker(new MarkerOptions().position(ramen16).title("とりどり").snippet("11:30～14:30 18:00～23:00").icon(icon));
+            }
+            if (hourtime >= 1130 && hourtime <= 1430) {
                 mMap.addMarker(new MarkerOptions().position(ramen17).title("喜元門　サイエンス大通り店").snippet("11：30～14：30(LO) 17：00～21：00").icon(icon));
             }
-            if (hourtime >= 1130 && hourtime <= 1430 && hourtime >= 1730 && hourtime <= 2030) {
+            if (hourtime >= 1700 && hourtime <= 2100) {
+                mMap.addMarker(new MarkerOptions().position(ramen17).title("喜元門　サイエンス大通り店").snippet("11：30～14：30(LO) 17：00～21：00").icon(icon));
+            }
+            if (hourtime >= 1130 && hourtime <= 1430) {
                 mMap.addMarker(new MarkerOptions().position(ramen19).title("武蒼").snippet("11:30-14:30 17:30-20:30").icon(icon));
+            }
+            if (hourtime >= 1730 && hourtime <= 2030) {
+                mMap.addMarker(new MarkerOptions().position(ramen19).title("武蒼").snippet("11:30-14:30 17:30-20:30").icon(icon));
+            }
+            if (hourtime >= 1130 && hourtime <= 1430) {
+                mMap.addMarker(new MarkerOptions().position(wasyoku10).title("ZEYO").snippet("11:30～14:30 18:00～23:30").icon(icon));
             }
         }
 
-        if (category.equals("all") || category3.equals("wasyoku")) {
+        if (category == 1 || category == 3) {
             if (hour >= 11 && hour < 15) {
                 mMap.addMarker(new MarkerOptions().position(wasyoku1).title("とんとこ豚").snippet("\"[平日]11:00～15:00（L.O14:30)　17:00～21：00\n" +
                         "[金、土、日、祝]11:00～15:00（L.O14:30)　17:00～22：00\"").icon(icon2));
@@ -256,7 +273,11 @@ public class MapsActivity extends FragmentActivity {
                 mMap.addMarker(new MarkerOptions().position(wasyoku8).title("ジャンク亭").snippet("11:00～22:00(L.O 21:30)").icon(icon2));
             }
             if (week >= 2 && week <= 6) {
-                if (hourtime >= 1130 && hourtime <= 1350 && hourtime >= 1700 && hourtime <= 2030) {
+                if (hourtime >= 1130 && hourtime <= 1350) {
+                    mMap.addMarker(new MarkerOptions().position(wasyoku4).title("ふくすけ").snippet("\"[月～金] 11:00～13:50 17:00～20:30\n" +
+                            "[土] 11:30～13:50\"").icon(icon2));
+                }
+                if (hourtime >= 1700 && hourtime <= 2030) {
                     mMap.addMarker(new MarkerOptions().position(wasyoku4).title("ふくすけ").snippet("\"[月～金] 11:00～13:50 17:00～20:30\n" +
                             "[土] 11:30～13:50\"").icon(icon2));
                 }
@@ -271,7 +292,11 @@ public class MapsActivity extends FragmentActivity {
                 mMap.addMarker(new MarkerOptions().position(wasyoku9).title("ランラン").snippet("17:00～23:15（ＬＯ）").icon(icon2));
             }
             if (week >= 2) {
-                if (hourtime >= 1130 && hourtime <= 1345 && hourtime >= 1800 && hourtime <= 2200) {
+                if (hourtime >= 1130 && hourtime <= 1345) {
+                    mMap.addMarker(new MarkerOptions().position(wasyoku5).title("夢屋").snippet("\"［月～土］11:30～13:45 18:00～22:00\n" +
+                            "［日・祝］18:00～21:00\"").icon(icon2));
+                }
+                if (hourtime >= 1800 && hourtime <= 2200) {
                     mMap.addMarker(new MarkerOptions().position(wasyoku5).title("夢屋").snippet("\"［月～土］11:30～13:45 18:00～22:00\n" +
                             "［日・祝］18:00～21:00\"").icon(icon2));
                 }
@@ -285,23 +310,26 @@ public class MapsActivity extends FragmentActivity {
             if (hourtime >= 1730 && hourtime <= 2230) {
                 mMap.addMarker(new MarkerOptions().position(wasyoku6).title("クラレット").snippet("17:30～22:30").icon(icon2));
             }
-            if (hourtime >= 1100 && hourtime <= 1500 && hourtime >= 1730 && hourtime <= 2030) {
+            if (hourtime >= 1100 && hourtime <= 1500) {
                 mMap.addMarker(new MarkerOptions().position(wasyoku7).title("おかだ").snippet("\"11:00～15:00 (L.O. 14:30)\n" +
                         "17:30～20:30 (L.O. 20:15)\"").icon(icon2));
             }
-            if (hourtime >= 1130 && hourtime <= 2200) {
-                mMap.addMarker(new MarkerOptions().position(wasyoku10).title("ZEYO").snippet("11:30～14:30 18:00～23:30").icon(icon2));
+            if (hourtime >= 1730 && hourtime <= 2030) {
+                mMap.addMarker(new MarkerOptions().position(wasyoku7).title("おかだ").snippet("\"11:00～15:00 (L.O. 14:30)\n" +
+                        "17:30～20:30 (L.O. 20:15)\"").icon(icon2));
             }
-
             if (hour >= 11 && hour < 23) {
-                mMap.addMarker(new MarkerOptions().position(wasyoku11).title("くら寿司").snippet("11：00～23：00 (L.O 22：30)").icon(icon2));
-                mMap.addMarker(new MarkerOptions().position(wasyoku12).title("はま寿司").snippet("11：00～23：00 (L.O 22：30)").icon(icon2));
-                mMap.addMarker(new MarkerOptions().position(wasyoku13).title("魚べい").snippet("11：00～23：00 (L.O 22：30)").icon(icon2));
+                mMap.addMarker(new MarkerOptions().position(wasyoku11).title("くら寿司").snippet("11：00～23：00 (L.O 22：30)").icon(icon5));
+                mMap.addMarker(new MarkerOptions().position(wasyoku12).title("はま寿司").snippet("11：00～23：00 (L.O 22：30)").icon(icon5));
+                mMap.addMarker(new MarkerOptions().position(wasyoku13).title("魚べい").snippet("11：00～23：00 (L.O 22：30)").icon(icon5));
             }
             if (hourtime >= 1130 && hourtime <= 2200) {
-                mMap.addMarker(new MarkerOptions().position(wasyoku14).title("かねき").snippet("11:30～22:00").icon(icon2));
+                mMap.addMarker(new MarkerOptions().position(wasyoku14).title("かねき").snippet("11:30～22:00").icon(icon5));
             }
-            if (hour >= 11 && hour < 14 && hour >= 17 && hour < 20) {
+            if (hour >= 11 && hour < 14) {
+                mMap.addMarker(new MarkerOptions().position(wasyoku15).title("くい亭").snippet("11:00-14:00 17:00-20:00").icon(icon2));
+            }
+            if (hour >= 17 && hour < 20) {
                 mMap.addMarker(new MarkerOptions().position(wasyoku15).title("くい亭").snippet("11:00-14:00 17:00-20:00").icon(icon2));
             }
             if (hour >= 11 && hour < 21) {
@@ -309,7 +337,7 @@ public class MapsActivity extends FragmentActivity {
             }
         }
 
-        if (category.equals("all") || category4.equals("italy")) {
+        if (category == 1 || category == 4) {
             if (hourtime >= 1130 && hourtime < 1500 && hourtime >= 1730 && hourtime <= 2230) {
                 mMap.addMarker(new MarkerOptions().position(italy1).title("ばらえてい").snippet("\"11:30～15:00(L.O.14:00)\n" +
                         "17:30～22:30(L.O.21:30)\"").icon(icon3));
@@ -362,7 +390,7 @@ public class MapsActivity extends FragmentActivity {
             }
         }
 
-        if (category.equals("all") || category5.equals("china")) {
+        if (category == 1 || category == 5 ) {
             if (hourtime >= 1130) {
                 mMap.addMarker(new MarkerOptions().position(china1).title("えんや").snippet("11:30～24:00").icon(icon4));
             }
@@ -376,10 +404,13 @@ public class MapsActivity extends FragmentActivity {
             if (hour >= 11) {
                 mMap.addMarker(new MarkerOptions().position(china4).title("大阪王将").snippet("11：00～24：00").icon(icon4));
             }
-            if (hourtime >= 1100 && hourtime <= 1430 && hourtime >= 1700 && hourtime <= 2400) {
+            if (hourtime >= 1100 && hourtime <= 1430) {
                 mMap.addMarker(new MarkerOptions().position(china5).title("シーアン").snippet("11：00～14：30 17：00～24：00").icon(icon4));
             }
-            if (hour >= 10 && hour < 15 && hour > 17) {
+            if (hourtime >= 1700) {
+                mMap.addMarker(new MarkerOptions().position(china5).title("シーアン").snippet("11：00～14：30 17：00～24：00").icon(icon4));
+            }
+            if (hour >= 10 && hour < 15 || hour > 17) {
                 mMap.addMarker(new MarkerOptions().position(china6).title("北方園").snippet("10:00～15:00 17:00～24:00").icon(icon4));
             }
             if (hour >= 11 && hour < 20) {

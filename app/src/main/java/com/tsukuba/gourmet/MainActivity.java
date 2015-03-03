@@ -25,39 +25,33 @@ public class MainActivity extends Activity {
 
     public void all(View v){                             //なんでもいいから全部のとき
         Intent intent = new Intent(getApplicationContext(),MapsActivity.class);
-        intent.putExtra("key","all");                 //第一引数に渡したいキー。これはStrのみ。第二引数に渡したい値。
+        intent.putExtra("key",1);                 //第一引数に渡したいキー。これはStrのみ。第二引数に渡したい値。
         startActivity(intent);
     }
 
     public void ramen(View v){                           //ラーメンのとき
-        Intent intent2 = new Intent(getApplicationContext(),MapsActivity.class);
-        intent2.putExtra("key2","ramen");
-        startActivity(intent2);
+        Intent intent = new Intent(getApplicationContext(),MapsActivity.class);
+        intent.putExtra("key",2);
+        startActivity(intent);
     }
 
     public void wasyoku(View v){                         //和食のとき
-        Intent intent3 = new Intent(getApplicationContext(),MapsActivity.class);
-        intent3.putExtra("key3","wasyoku");
-        startActivity(intent3);
+        Intent intent = new Intent(getApplicationContext(),MapsActivity.class);
+        intent.putExtra("key",3);
+        startActivity(intent);
     }
 
     public void italy(View v){                           //イタリアンのとき
-        Intent intent4 = new Intent(getApplicationContext(),MapsActivity.class);
-        intent4.putExtra("key4","italy");
-        startActivity(intent4);
+        Intent intent = new Intent(getApplicationContext(),MapsActivity.class);
+        intent.putExtra("key",4);
+        startActivity(intent);
     }
 
     public void china(View v){                           //中華のとき
-        Intent intent5 = new Intent(getApplicationContext(),MapsActivity.class);
-        intent5.putExtra("key5","china");
-        startActivity(intent5);
+        Intent intent = new Intent(getApplicationContext(),MapsActivity.class);
+        intent.putExtra("key",5);
+        startActivity(intent);
     }
-
-    /*public void drink(View v){                           //寿司のとき
-        Intent intent6 = new Intent(getApplicationContext(),MapsActivity.class);
-        intent6.putExtra("key6","drink");
-        startActivity(intent6);
-    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
