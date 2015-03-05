@@ -1,6 +1,7 @@
 package com.tsukuba.gourmet;
 
 import com.google.android.gms.internal.as;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 
@@ -30,6 +31,8 @@ import java.util.Calendar;
 public class MapsActivity extends FragmentActivity{
 
     private GoogleMap mMap;         //mapの取得
+    private static Location mMyLocation = null;
+    private static boolean mMyLocationCentering = false;
 
     //場所の指定。緯度経度
     LatLng ramen1 = new LatLng(36.097468, 140.110217);             //ごう家
@@ -136,30 +139,35 @@ public class MapsActivity extends FragmentActivity{
         mMap.getUiSettings().setZoomControlsEnabled(true);                //ズームボタンの追加をはじめに行う。
         mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);                       // マップをハイブリッド表示にする
         mMap.setIndoorEnabled(false);                                     // 屋内マップ表示を無効にする（標準は true）
-        mMap.setMyLocationEnabled(true);                                  // 現在地を有効にする
-        mMap.getUiSettings().setMyLocationButtonEnabled(true);            // 現在地表示ボタンを有効にする
         UiSettings settings = mMap.getUiSettings();                       // Settingのインポート
         settings.setCompassEnabled(true);                                 // コンパスonにする
+        mMap.setMyLocationEnabled(true);                                  // 現在地マーカーを有効にする
+        mMap.getUiSettings().setMyLocationButtonEnabled(true);            // 現在地表示ボタンを有効にする
 
-        /*LocationManager locman = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        Location loc = locman.getLastKnownLocation("gps");                // LocationManagerを使う*/
+        mMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener(){ //現在を中心に表示する
+             @Override
+             public void onMyLocationChange(Location location){             //onMyLocationChangeで現在地を拾う
+                 if(mMyLocationCentering == false) {
+                     mMyLocation = location;
+                     CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(mMyLocation.getLatitude(), mMyLocation.getLongitude()), 10.0f);
+                     mMap.animateCamera(cameraUpdate);
+                 }
+                 mMyLocation = location;
+                 mMyLocationCentering = true;       //ここで中心へ
+                 LatLng current = new LatLng(mMyLocation.getLatitude(), mMyLocation.getLongitude());         //大学の緯度経度：36.111386、140.104012
 
-        double currentLat = 36.111386;                            // 現在地の緯度
-        double currentLong = 140.104012;                          // 現在地の経度
-        LatLng current = new LatLng(36.111386,140.104012);
+                 CircleOptions circleOptions = new CircleOptions()                 // 円のoption
+                         .center(new LatLng(mMyLocation.getLatitude(), mMyLocation.getLongitude()))              // 中心。緯度経度
+                         .radius(2000);                                            // 半径。m
+                 Circle circle = mMap.addCircle(circleOptions);                    // 円の追加.このままだと円が黒色.見にくい
+                 circle.setStrokeColor(Color.argb(0x99, 0x33, 0x99, 0xFF));        // 円の線の色。alpha,red,green,blue
+                 circle.setStrokeWidth(10.0f);                                     // 円の線の太さ
+                 circle.setFillColor(Color.argb(10, 0x33, 0x99, 0xFF));          // 円の塗りつぶしの色
+                 BitmapDescriptor icon6 = BitmapDescriptorFactory.fromResource(R.drawable.s_tukutuku5);     //アイコンの変更.Bitmapに変える.sizeに注意
+                 mMap.addMarker(new MarkerOptions().position(current).title("現在地").icon(icon6));
 
-        CircleOptions circleOptions = new CircleOptions()                 // 円のoption
-                .center(new LatLng(currentLat, currentLong))              // 中心。緯度経度
-                .radius(2000);                                            // 半径。m
-        Circle circle = mMap.addCircle(circleOptions);                    // 円の追加.このままだと円が黒色.見にくい
-
-        circle.setStrokeColor(Color.argb(0x99, 0x33, 0x99, 0xFF));        // 円の線の色。alpha,red,green,blue
-        circle.setStrokeWidth(10.0f);                                     // 円の線の太さ
-        circle.setFillColor(Color.argb(0x22, 0x33, 0x99, 0xFF));          // 円の塗りつぶしの色
-        BitmapDescriptor icon6 = BitmapDescriptorFactory.fromResource(R.drawable.s_tukutuku5);     //アイコンの変更.Bitmapに変える.sizeに注意
-        mMap.addMarker(new MarkerOptions().position(current).title("大笑軒響").snippet("11時〜24時").icon(icon6));      //snippetはコメント挿入
-
-
+             }
+        });
 
         BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.s_ramen2);     //アイコンの変更.Bitmapに変える.sizeに注意
         BitmapDescriptor icon2 = BitmapDescriptorFactory.fromResource(R.drawable.s_wasyoku2);     //アイコンの変更.Bitmapに変える.sizeに注意
@@ -167,14 +175,7 @@ public class MapsActivity extends FragmentActivity{
         BitmapDescriptor icon4 = BitmapDescriptorFactory.fromResource(R.drawable.s_chinese1);     //アイコンの変更.Bitmapに変える.sizeに注意
         BitmapDescriptor icon5 = BitmapDescriptorFactory.fromResource(R.drawable.s_sushi);     //アイコンの変更.Bitmapに変える.sizeに注意
 
-        //つくば付近にいく。別で現在地もあるけどw
-        CameraPosition tsukuba = new CameraPosition.Builder()
-                .target(new LatLng(36.083486, 140.076642)).zoom(10.5f)
-                .bearing(0).tilt(25).build();
-        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(tsukuba));
-
         //以下、ゴリ押しで進めていく。お店の追加をしてマーカーで表示する。if文回す
-
         if (category == 1 || category == 2) {
             if (hour >= 17 && hour < 24) {
                 MarkerOptions gouya = new MarkerOptions();
